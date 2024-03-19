@@ -81,7 +81,7 @@ Frontend: Статические файлы фронтенда будут раз
 | Редактирование папки | PUT /api/todo/folders/changeFolder:folderId | Редактирование существующей папки | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND ERR_VALIDATION_FAILED |
 | Удаление папки  | DELETE /api/todo/folders/deleteFolder:folderId | Удаление существующей папки   | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
-| Сортировка задач | GET /api/todo/tasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH |
+| Сортировка задач | PUT /api/todo/tasks/sortTasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH |
 
 Возвращаемый методами Task[] представляет собой список задач в конкретной папке
 # Детальное описание ТР
