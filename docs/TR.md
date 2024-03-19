@@ -74,7 +74,7 @@ Frontend: Статические файлы фронтенда будут раз
 |------------------|------------------------------------|--------------------------------|--------------------------------------------------------------|-------------------|----------------------------------------------|
 | Регистрация      | POST /api/auth/register            | Регистрация новой учетной записи | interface Request { email: string; password: string; }      | interface Response { message: string; } | ERR_EMAIL_ALREADY_EXISTS ERR_VALIDATION_FAILED |
 | Авторизация      | POST /api/auth/login               | Вход пользователя в систему    | interface Request { email: string; password: string; }      | interface Response { token: string; } | ERR_INVALID_CREDENTIALS ERR_USER_NOT_FOUND |
-| Создание задачи | POST /api/todo/tasks/crateTask               | Создание новой задачи          | interface Request { name: string; description?: string; date: Date; folderId?: string;} | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
+| Создание задачи | POST /api/todo/tasks/createTask               | Создание новой задачи          | interface Request { name: string; description?: string; date: Date; folderId?: string;} | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
 | Редактирование задачи | PUT /api/todo/tasks/changeTask/:taskId    | Редактирование существующей задачи | interface Request { name?: string; description?: string; date: Date; folderId?: string; status:string} | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND ERR_VALIDATION_FAILED |
 | Удаление задачи | DELETE /api/todo/tasks/deleteTask:taskId    | Удаление существующей задачи  | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
 | Создание папки  | POST /api/todo/folders/newFolder            | Создание новой папки            | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
@@ -83,6 +83,7 @@ Frontend: Статические файлы фронтенда будут раз
 | Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Сортировка задач | GET /api/todo/tasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH |
 
+Возвращаемый методами Task[] представляет собой список задач в конкретной папке
 # Детальное описание ТР
 
 Веб-приложение TODO-листа будет реализовано на основе предоставленного технического задания. Будет разработана структура базы данных MongoDB для хранения информации о пользователях, задачах и папках. Фронтенд будет представлен статическими HTML и CSS файлами, а взаимодействие с бэкендом будет осуществляться с помощью JavaScript. Авторизация пользователей будет осуществляться с помощью JWT токенов, отправка данных будет происходить через API с использованием HTTP методов.
