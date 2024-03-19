@@ -80,12 +80,12 @@ Frontend: Статические файлы фронтенда будут раз
 | Создание папки  | POST /api/todo/folders/newFolder            | Создание новой папки            | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
 | Редактирование папки | PUT /api/todo/folders/changeFolder:folderId | Редактирование существующей папки | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND ERR_VALIDATION_FAILED |
 | Удаление папки  | DELETE /api/todo/folders/deleteFolder:folderId | Удаление существующей папки   | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
-| Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
-| Сортировка задач | PUT /api/todo/tasks/sortTasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH |
+| Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: string; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
+| Сортировка задач | PUT /api/todo/tasks/sortTasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: string; } | ERR_USER_NOT_AUTH |
 | Получение списка папок | GET /api/todo/folders/allFolders               | Получение списка всех папок | - | interface Response { files: string; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Просмотр задачи | GET /api/todo/folders/:folderId/tasks               | Получение данных из задачи | - | interface Response { name: string; description: string; date: Date; folderId: string;} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
 
-Возвращаемый методами Task[] представляет собой список задач в конкретной папке
+
 # Детальное описание ТР
 
 Веб-приложение TODO-листа будет реализовано на основе предоставленного технического задания. Будет разработана структура базы данных MongoDB для хранения информации о пользователях, задачах и папках. Фронтенд будет представлен статическими HTML и CSS файлами, а взаимодействие с бэкендом будет осуществляться с помощью JavaScript. Авторизация пользователей будет осуществляться с помощью JWT токенов, отправка данных будет происходить через API с использованием HTTP методов.
