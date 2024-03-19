@@ -7,7 +7,7 @@
 ### Backend:
 - Язык: JavaScript
 - Фреймворк: Express.js
-- БД: MongoDB Atlas (удаленная работа на сервере преподавателя)
+- БД: MySQL (удаленная работа на сервере преподавателя)
 - ORM: mongoose
 
 ### Frontend:
@@ -20,7 +20,6 @@
 - argon2 — утилита для хеширования паролей
 - helmet — утилита для установки HTTP-заголовков, связанных с безопасностью
 - cors — утилита для установки HTTP-заголовков, связанных с CORS
-- cookie-parser — утилита для разбора куки, содержащихся в запросе
 - cross-env — утилита для установки переменных среды окружения
 
 ## Особенности деплоя(примерно)
@@ -36,22 +35,22 @@ Frontend: Статические файлы фронтенда будут раз
 - `config.example` - директория должна быть переименована в `config` после установки значений переменных. Обычно, переменные среды окружения помещаются в файл `.env`, но можно использовать и такой вариант, главное, не забыть указать `config` в `.gitignore`
 - `index.js`
 - `middlewares` - посредники, промежуточный слой
-  - `index.js` - агрегация и повторный экспорт посредников
-  - `setCookie.js` - для генерации токенов обновления и доступа
-  - `setSecurityHeaders.js` - для установки заголовков безопасности, используется вместо `helmet`
-  - `verifyAuth.js` - для проверки аутентификации
-  - `verifyAccess.js` - для проверки авторизации
-  - `verifyPermission.js` - для дополнительной проверки полномочий пользователя
+- `index.js` - агрегация и повторный экспорт посредников
+- `setCookie.js` - для генерации токенов обновления и доступа
+- `setSecurityHeaders.js` - для установки заголовков безопасности, используется вместо `helmet`
+- `verifyAuth.js` - для проверки аутентификации
+- `verifyAccess.js` - для проверки авторизации
+- `verifyPermission.js` - для дополнительной проверки полномочий пользователя
 - `models`
-  - `User.js` - модель пользователя для `mongoose`
+- `User.js` - модель пользователя для `mongoose`
 - `routes`
-  - `app.routes.js` - роуты приложения
-  - `auth.routes.js` - роуты аутентификации/авторизации
+- `app.routes.js` - роуты приложения
+- `auth.routes.js` - роуты аутентификации/авторизации
 - `services`
-  - `auth.services.js` - сервисы аутентификации/авторизации
+- `auth.services.js` - сервисы аутентификации/авторизации
 - `utils` - утилиты
-  - `generateKeyPair.js` - для генерации публичного и приватного ключей (запускается при выполнении команды `yarn gen`)
-  - `token.js` - для подписания и проверки токенов
+- `generateKeyPair.js` - для генерации публичного и приватного ключей (запускается при выполнении команды `yarn gen`)
+- `token.js` - для подписания и проверки токенов
 - `index.js` - основной файл сервера
 
 ## Роуты
@@ -75,12 +74,12 @@ Frontend: Статические файлы фронтенда будут раз
 |------------------|------------------------------------|--------------------------------|--------------------------------------------------------------|-------------------|----------------------------------------------|
 | Регистрация      | POST /api/auth/register            | Регистрация новой учетной записи | interface Request { email: string; password: string; }      | interface Response { message: string; } | ERR_EMAIL_ALREADY_EXISTS ERR_VALIDATION_FAILED |
 | Авторизация      | POST /api/auth/login               | Вход пользователя в систему    | interface Request { email: string; password: string; }      | interface Response { token: string; } | ERR_INVALID_CREDENTIALS ERR_USER_NOT_FOUND |
-| Создание задачи | POST /api/todo/tasks               | Создание новой задачи          | interface Request { name: string; description?: string; deadline: Date; folderId?: string; status:string} | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
-| Редактирование задачи | PUT /api/todo/tasks/:taskId    | Редактирование существующей задачи | interface Request { name?: string; description?: string; deadline: Date; folderId?: string; status:string} | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND ERR_VALIDATION_FAILED |
-| Удаление задачи | DELETE /api/todo/tasks/:taskId    | Удаление существующей задачи  | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
-| Создание папки  | POST /api/todo/folders            | Создание новой папки            | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
-| Редактирование папки | PUT /api/todo/folders/:folderId | Редактирование существующей папки | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND ERR_VALIDATION_FAILED |
-| Удаление папки  | DELETE /api/todo/folders/:folderId | Удаление существующей папки   | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
+| Создание задачи | POST /api/todo/tasks/crateTask               | Создание новой задачи          | interface Request { name: string; description?: string; date: Date; folderId?: string;} | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
+| Редактирование задачи | PUT /api/todo/tasks/changeTask/:taskId    | Редактирование существующей задачи | interface Request { name?: string; description?: string; date: Date; folderId?: string; status:string} | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND ERR_VALIDATION_FAILED |
+| Удаление задачи | DELETE /api/todo/tasks/deleteTask:taskId    | Удаление существующей задачи  | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
+| Создание папки  | POST /api/todo/folders/newFolder            | Создание новой папки            | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_VALIDATION_FAILED |
+| Редактирование папки | PUT /api/todo/folders/changeFolder:folderId | Редактирование существующей папки | interface Request { name: string; }                          | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND ERR_VALIDATION_FAILED |
+| Удаление папки  | DELETE /api/todo/folders/deleteFolder:folderId | Удаление существующей папки   | -                                                            | interface Response {} | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Сортировка задач | GET /api/todo/tasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: Task[]; } | ERR_USER_NOT_AUTH |
 
@@ -90,17 +89,14 @@ Frontend: Статические файлы фронтенда будут раз
 
 ## Регистрация
 
-При регистрации на сервер отправляется POST-запрос по адресу /register. Тело запроса должно содержать имя, адрес электронной почты, пароль пользователя и, опционально, его роль (по умолчанию USER, второй вариант — ADMIN). Сервер проверяет наличие пользователя с указанным именем или email в БД. Если пользователь новый, его пароль хешируется, после чего данные пользователя записываются в БД и в req.user. После успешной записи пользователя в базу, сервер формирует и отправляет письмо на указанный при регистрации адрес электронной почты. Это письмо содержит ссылку для подтверждения, которая ведёт на конечную точку вроде /confirm-email с уникальным токеном (или кодом) для пользователя. Только после перехода по этой ссылке учетная запись пользователя считается полностью активированной.
-
-**Посредник setCookie:** Пока пользователь не подтвердил свой адрес электронной почты, ему может быть ограничен доступ к некоторым ресурсам. Тем не менее, процесс продолжается, и управление передается посреднику setCookie для подписывания токенов. Данный посредник подписывает токен обновления и токен доступа. Токен обновления зашивается в куки, передаваемую только по HTTPS и доступную только на сервере. Токен доступа и данные пользователя возвращаются клиенту.
+При регистрации на сервер отправляется POST-запрос по адресу /register. Тело запроса должно содержать имя, адрес электронной почты, пароль пользователя. Сервер проверяет наличие пользователя с указанным именем или email в БД. Если пользователь новый, его пароль хешируется, после чего данные пользователя записываются в БД и в req.user. После успешной записи пользователя в базу, сервер формирует и отправляет письмо на указанный при регистрации адрес электронной почты. Это письмо содержит ссылку для подтверждения, которая ведёт на конечную точку вроде /confirm-email с уникальным токеном (или кодом) для пользователя. Только после перехода по этой ссылке учетная запись пользователя считается полностью активированной.
 
 ## Авторизация
 
 При инициализации клиентское приложение отправляет на сервер GET-запрос по адресу /api/auth/. Данный запрос проходит через посредника verifyAuth. Этот посредник проверяет 2 вещи:
 - Наличие и значение специального заголовка X-Verification-Code. Вместо этого может использоваться любой другой способ уникальной идентификации запроса, позволяющий достоверно определить, что запрос отправлен доверенным клиентом
-- Наличие и время жизни токена обновления, содержащегося в куки
 
-Если заголовок и токен в порядке, токен декодируется, его содержимое записывается в req.user и управление передается сервису getUser. Сервис getUser получает данные пользователя по его ID из БД, обновляет req.user и передает управление посреднику setCookie. Посредник setCookie подписывает токен доступа (поскольку токен обновления уже имеется, он игнорируется) и возвращает его клиенту вместе с данными пользователя.
+Если заголовок и токен в порядке, токен декодируется, его содержимое записывается в req.user и управление передается сервису getUser. Сервис getUser получает данные пользователя по его ID из БД, обновляет req.user.
 
 Если время жизни токена обновления истекло, возвращается статус 401 и соответствующее сообщение. 
 
@@ -133,6 +129,6 @@ Frontend: Статические файлы фронтенда будут раз
 
 ## Использованная Литература
 
-- [Signup Login Application with Node.js, Express, and MongoDB](https://medium.com/geekculture/signup-login-application-with-nodejs-express-and-mongodb-658498e580cf)
+- [Signup Login Application with Node.js, Express, and MySQL](https://medium.com/geekculture/signup-login-application-with-nodejs-express-and-mongodb-658498e580cf)
 - [JWT: авторизация и аутентификация в приложениях Node.js](https://habr.com/ru/companies/timeweb/articles/593063/)
 - [How to Build a Todo List App with JavaScript and Local Storage](https://thecodingpie.medium.com/how-to-build-a-todo-list-app-with-javascript-and-local-storage-a884f4ea3ec)
