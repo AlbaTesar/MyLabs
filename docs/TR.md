@@ -83,7 +83,7 @@ Frontend: Статические файлы фронтенда будут раз
 | Получение задач по папке | GET /api/todo/folders/:folderId/tasks | Получение списка задач по указанной папке | -                                                    | interface Response { tasks: string; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
 | Сортировка задач | PUT /api/todo/tasks/sortTasks                | Получение отсортированного списка задач | Query Parameters: sortBy: string; // name или createdAt (по умолчанию) | interface Response { tasks: string; } | ERR_USER_NOT_AUTH |
 | Получение списка папок | GET /api/todo/folders/allFolders               | Получение списка всех папок | - | interface Response { files: string; } | ERR_USER_NOT_AUTH ERR_FOLDER_NOT_FOUND |
-| Просмотр задачи | GET /api/todo/folders/:folderId/tasks               | Получение данных из задачи | - | interface Response { name: string; description: string; date: Date; folderId: string;} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
+| Просмотр задачи | GET /api/todo/folders/:folderId/tasks/:taskId               | Получение данных из задачи | - | interface Response { name: string; description: string; date: Date; folderId: string;} | ERR_USER_NOT_AUTH ERR_TASK_NOT_FOUND |
 
 
 # Детальное описание ТР
