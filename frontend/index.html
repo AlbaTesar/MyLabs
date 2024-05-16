@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #taskList {
+            margin-bottom: 20px;
+        }
+        #taskForm {
+            display: none; /* Скрыть форму добавления задач по умолчанию */
+        }
+        #logoutButton, #deleteAccountButton {
+            display: none; /* Скрыть кнопки по умолчанию */
+        }
+    </style>
+</head>
+<body>
+<h1>To-Do List</h1>
+<button id="logoutButton" style="position: fixed; top: 10px; left: 10px;">Выйти</button>
+<button id="deleteAccountButton" style="position: fixed; top: 10px; right: 10px;">Удалить аккаунт</button>
+
+<form id="loginForm">
+  <input type="text" id="username" placeholder="Имя пользователя" required>
+  <input type="password" id="password" placeholder="Пароль" required>
+  <button type="submit">Войти</button>
+</form>
+
+<form id="registerForm">
+  <input type="text" id="newUsername" placeholder="Новое имя пользователя" required>
+  <input type="password" id="newPassword" placeholder="Новый пароль" required>
+  <button type="submit">Зарегистрироваться</button>
+</form>
+
+<form id="taskForm">
+    <input type="text" id="taskInput" placeholder="Add a new task">
+    <button type="submit">Add Task</button>
+</form>
+
+<ul id="taskList"></ul>
+<script src="script.js"></script>
+</body>
+</html>

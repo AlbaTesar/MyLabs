@@ -10,11 +10,12 @@ const config = {
       database: 'db1', // Имя вашей базы данных
       port: 25060, // порт базы данных
 			ssl: {
-			  ca: fs.readFileSync('E:\\Nodejs\\ca-certificate-test.crt'), // Путь к файлу ca.crt
+			  ca: fs.readFileSync('E:\\Nodejs\\backend\\ca-certificate-test.crt'), // Путь к файлу ca.crt
 			}
     },
   }, 
-  port: 3000 // порт на котором будет запущен сервер приложения
+  port: 3000, // порт на котором будет запущен сервер приложения
+  jwtSecret: 'meyson'
 };
 
 module.exports =  config;
