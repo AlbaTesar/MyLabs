@@ -1,56 +1,11 @@
-// файл ./frontend/script.js
-
-// Функция для загрузки задач с сервера
-function loadTasks() {
-  const token = localStorage.getItem('token');
-  fetch('http://localhost:3000/getTasks', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-    .then(response => response.json())
-    .then(tasks => {
-      const taskList = document.getElementById('taskList');
-      taskList.innerHTML = '';
-      tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.textContent = task.name;
-        taskList.appendChild(li);
-      });
-    })
-    .catch(error => console.error('Error fetching tasks:', error));
-}
-
-// Функция для добавления задачи на сервер
-function addTask(taskName) {
-  const token = localStorage.getItem('token');
-  fetch('http://localhost:3000/addTask', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ name: taskName })
-  })
-    .then(response => response.text())
-    .then(message => {
-      console.log(message);
-      loadTasks(); // После добавления задачи перезагружаем список задач
-    })
-    .catch(error => console.error('Error adding task:', error));
-}
-
-// Обработчик события отправки формы
-document.getElementById('taskForm').addEventListener('submit', function (event) {
-  event.preventDefault(); // Предотвращаем перезагрузку страницы
-  const taskInput = document.getElementById('taskInput');
-  const taskName = taskInput.value.trim();
-  if (taskName !== '') {
-    addTask(taskName); // Вызываем функцию добавления задачи
-    taskInput.value = ''; // Очищаем поле ввода
-  }
-});
 document.addEventListener('DOMContentLoaded', () => {
+  // Функция для установки состояния аутентификации
+  function setAuthState(isAuthenticated) {
+    document.getElementById('logoutButton').style.display = isAuthenticated ? 'block' : 'none';
+    document.getElementById('deleteAccountButton').style.display = isAuthenticated ? 'block' : 'none';
+    document.getElementById('taskForm').style.display = isAuthenticated ? 'block' : 'none';
+  }
+
   document.getElementById('loginForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -66,9 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       if (data.token) {
         localStorage.setItem('token', data.token);
-        document.getElementById('logoutButton').style.display = 'block';
-        document.getElementById('deleteAccountButton').style.display = 'block';
         alert('Вы успешно вошли');
+        setAuthState(true);
         window.location.reload(); // Перезагружаем страницу после входа
       } else {
         throw new Error('Не получен токен');
@@ -83,18 +37,44 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     const newUsername = document.getElementById('newUsername').value;
     const newPassword = document.getElementById('newPassword').value;
+    const newEmail = document.getElementById('newEmail').value;
     try {
       const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username: newUsername, password: newPassword })
+        body: JSON.stringify({ username: newUsername, password: newPassword, email: newEmail })
       });
-      alert('Пользователь успешно зарегистрирован');
+      const data = await response.text();
+      alert(data);
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
       alert('Ошибка при регистрации');
+    }
+  });
+
+  document.getElementById('forgotPasswordButton').addEventListener('click', () => {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('forgotPasswordForm').style.display = 'block';
+  });
+
+  document.getElementById('forgotPasswordForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = document.getElementById('forgotEmail').value;
+    try {
+      const response = await fetch('http://localhost:3000/forgotPassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.text();
+      alert(data);
+    } catch (error) {
+      console.error('Ошибка при сбросе пароля:', error);
+      alert('Ошибка при сбросе пароля');
     }
   });
 
@@ -116,27 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Данные пользователя:', data);
       document.getElementById('loginForm').style.display = 'none';
       document.getElementById('registerForm').style.display = 'none';
-      document.getElementById('taskForm').style.display = 'block';
-      document.getElementById('logoutButton').style.display = 'block';
-      document.getElementById('deleteAccountButton').style.display = 'block';
+      setAuthState(true);
       const userDisplay = document.createElement('p');
       userDisplay.textContent = `Привет, ${data.username}!`;
       document.body.insertBefore(userDisplay, document.getElementById('taskForm'));
-      loadTasks(); // Загружаем задачи, теперь, когда пользователь аутентифицирован
+      loadFoldersAndTasks(); // Загружаем папки и задачи, теперь, когда пользователь аутентифицирован
     })
     .catch(error => {
       console.error('Error:', error);
       localStorage.removeItem('token'); // При ошибке удаляем неверный токен
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('registerForm').style.display = 'block';
+      setAuthState(false);
     });
   } else {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('registerForm').style.display = 'block';
+    setAuthState(false);
   }
 
   document.getElementById('logoutButton').addEventListener('click', () => {
     localStorage.removeItem('token');
+    setAuthState(false);
     window.location.reload(); // Перезагружаем страницу для обновления интерфейса
   });
 
@@ -154,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
           alert('Аккаунт успешно удален');
           localStorage.removeItem('token');
+          setAuthState(false);
           window.location.reload();
         } else {
           throw new Error('Не удалось удалить аккаунт');
@@ -165,94 +143,168 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function loadTasks() {
+  async function loadFoldersAndTasks() {
     const token = localStorage.getItem('token');
-    fetch('http://localhost:3000/getTasks', {
+    const response = await fetch('http://localhost:3000/getFoldersAndTasks', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
-    })
-    .then(response => response.json())
-    .then(tasks => {
-      const taskList = document.getElementById('taskList');
-      taskList.innerHTML = '';
-      tasks.forEach(task => {
+    });
+    const data = await response.json();
+    const folderList = document.getElementById('folderList');
+    folderList.innerHTML = '';
+    data.folders.forEach(folder => {
+      const li = document.createElement('li');
+      li.classList.add('folder');
+      const folderContent = document.createElement('div');
+      folderContent.textContent = folder.name;
+
+      const buttonGroup = document.createElement('div');
+      buttonGroup.classList.add('button-group');
+
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Остановить всплытие события, чтобы избежать загрузки задач
+        deleteFolder(folder.id);
+      });
+      buttonGroup.appendChild(deleteButton);
+
+      const editButton = document.createElement('button');
+      editButton.textContent = 'Change';
+      editButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Остановить всплытие события, чтобы избежать загрузки задач
+        changeFolder(folder.id, prompt('New folder name:', folder.name));
+      });
+      buttonGroup.appendChild(editButton);
+
+      li.appendChild(folderContent);
+      li.appendChild(buttonGroup);
+      folderList.appendChild(li);
+
+      const taskList = document.createElement('ul');
+      taskList.id = `taskList-${folder.id}`;
+      folderList.appendChild(taskList);
+    });
+
+    data.tasks.forEach(task => {
+      const taskList = document.getElementById(`taskList-${task.folder}`);
+      if (taskList) {
         const li = document.createElement('li');
-        li.textContent = task.name;
+        li.classList.add('task');
+        const taskContent = document.createElement('div');
+        taskContent.textContent = task.name;
+
+        const buttonGroup = document.createElement('div');
+        buttonGroup.classList.add('button-group');
+
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', () => deleteTask(task.id));
-        li.appendChild(deleteButton);
+        buttonGroup.appendChild(deleteButton);
+
         const editButton = document.createElement('button');
         editButton.textContent = 'Change';
         editButton.addEventListener('click', () => changeTask(task.id, prompt('New task name:', task.name)));
-        li.appendChild(editButton);
+        buttonGroup.appendChild(editButton);
+
+        li.appendChild(taskContent);
+        li.appendChild(buttonGroup);
         taskList.appendChild(li);
-      });
-    })
-    .catch(error => console.error('Error fetching tasks:', error));
+      }
+    });
   }
 
-  function addTask(taskName) {
+  async function addFolderAndTask(folderName, taskName) {
     const token = localStorage.getItem('token');
-    fetch('http://localhost:3000/addTask', {
+    const response = await fetch('http://localhost:3000/addFolderAndTask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ name: taskName })
-    })
-    .then(response => response.text())
-    .then(message => {
-      console.log(message);
-      loadTasks(); // После добавления задачи перезагружаем список задач
-    })
-    .catch(error => console.error('Error adding task:', error));
+      body: JSON.stringify({ folderName, taskName })
+    });
+    const message = await response.text();
+    console.log(message);
+    loadFoldersAndTasks();
   }
 
-  function deleteTask(taskId) {
+  async function deleteFolder(folderId) {
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:3000/deleteTask/${taskId}`, {
+    const response = await fetch(`http://localhost:3000/deleteFolder/${folderId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
       }
-    })
-    .then(response => response.text())
-    .then(message => {
-      console.log(message);
-      loadTasks(); // После удаления задачи перезагружаем список задач
-    })
-    .catch(error => console.error('Error deleting task:', error));
+    });
+    const message = await response.text();
+    console.log(message);
+    loadFoldersAndTasks();
   }
 
-  function changeTask(taskId, newTaskName) {
+  async function changeFolder(folderId, newFolderName) {
+    if (!newFolderName) return; // Если пользователь отменил изменение
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:3000/updateFolder/${folderId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ name: newFolderName })
+    });
+    const message = await response.text();
+    console.log(message);
+    loadFoldersAndTasks();
+  }
+
+  async function deleteTask(taskId) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:3000/deleteTask/${taskId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const message = await response.text();
+    console.log(message);
+    loadFoldersAndTasks();
+  }
+
+  async function changeTask(taskId, newTaskName) {
     if (!newTaskName) return; // Если пользователь отменил изменение
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:3000/updateTask/${taskId}`, {
+    const response = await fetch(`http://localhost:3000/updateTask/${taskId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ name: newTaskName })
-    })
-    .then(response => response.text())
-    .then(message => {
-      console.log(message);
-      loadTasks(); // После изменения задачи перезагружаем список задач
-    })
-    .catch(error => console.error('Error updating task:', error));
+    });
+    const message = await response.text();
+    console.log(message);
+    loadFoldersAndTasks();
   }
 
-  document.getElementById('taskForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Предотвращаем перезагрузку страницы
+  document.getElementById('taskForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const folderInput = document.getElementById('folderInput');
     const taskInput = document.getElementById('taskInput');
+    const folderName = folderInput.value.trim();
     const taskName = taskInput.value.trim();
-    if (taskName !== '') {
-      addTask(taskName); // Вызываем функцию добавления задачи
-      taskInput.value = ''; // Очищаем поле ввода
+    if (folderName !== '' && taskName !== '') {
+      addFolderAndTask(folderName, taskName);
+      folderInput.value = '';
+      taskInput.value = '';
+    } else {
+      alert('Пожалуйста, укажите имя папки и задачи');
     }
   });
+
+  // Вызов функции загрузки папок и задач при загрузке страницы, если пользователь аутентифицирован
+  if (token) {
+    loadFoldersAndTasks();
+  }
 });

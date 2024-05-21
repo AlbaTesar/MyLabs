@@ -1,47 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #taskList {
-            margin-bottom: 20px;
-        }
-        #taskForm {
-            display: none; /* Скрыть форму добавления задач по умолчанию */
-        }
-        #logoutButton, #deleteAccountButton {
-            display: none; /* Скрыть кнопки по умолчанию */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #folderList {
+      margin-bottom: 20px;
+    }
+    #taskForm {
+      display: none; /* Скрыть форму добавления задач по умолчанию */
+    }
+    #logoutButton, #deleteAccountButton {
+      display: none; /* Скрыть кнопки по умолчанию */
+    }
+    .folder, .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task {
+      margin-left: 20px; /* Сдвиг задач вправо */
+    }
+    .button-group {
+      display: flex;
+      align-items: center;
+    }
+    button {
+      margin-left: 5px;
+    }
+  </style>
 </head>
 <body>
-<h1>To-Do List</h1>
-<button id="logoutButton" style="position: fixed; top: 10px; left: 10px;">Выйти</button>
-<button id="deleteAccountButton" style="position: fixed; top: 10px; right: 10px;">Удалить аккаунт</button>
+  <h1>To-Do List</h1>
+  <button id="logoutButton" style="position: fixed; top: 10px; left: 10px;">Выйти</button>
+  <button id="deleteAccountButton" style="position: fixed; top: 10px; right: 10px;">Удалить аккаунт</button>
 
-<form id="loginForm">
-  <input type="text" id="username" placeholder="Имя пользователя" required>
-  <input type="password" id="password" placeholder="Пароль" required>
-  <button type="submit">Войти</button>
-</form>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Имя пользователя" required>
+    <input type="password" id="password" placeholder="Пароль" required>
+    <button type="submit">Войти</button>
+    <button type="button" id="forgotPasswordButton">Забыли пароль?</button>
+  </form>
 
-<form id="registerForm">
-  <input type="text" id="newUsername" placeholder="Новое имя пользователя" required>
-  <input type="password" id="newPassword" placeholder="Новый пароль" required>
-  <button type="submit">Зарегистрироваться</button>
-</form>
+  <form id="forgotPasswordForm" style="display: none;">
+    <input type="email" id="forgotEmail" placeholder="Введите вашу почту" required>
+    <button type="submit">Сбросить пароль</button>
+  </form>
 
-<form id="taskForm">
-    <input type="text" id="taskInput" placeholder="Add a new task">
-    <button type="submit">Add Task</button>
-</form>
+  <form id="registerForm">
+    <input type="text" id="newUsername" placeholder="Новое имя пользователя" required>
+    <input type="password" id="newPassword" placeholder="Новый пароль" required>
+    <input type="email" id="newEmail" placeholder="Электронная почта" required>
+    <button type="submit">Зарегистрироваться</button>
+  </form>
 
-<ul id="taskList"></ul>
-<script src="script.js"></script>
+  <form id="taskForm">
+    <input type="text" id="folderInput" placeholder="Добавить новую папку">
+    <input type="text" id="taskInput" placeholder="Добавить новую задачу">
+    <button type="submit">Добавить</button>
+  </form>
+
+  <ul id="folderList"></ul>
+
+  <script src="script.js"></script>
 </body>
 </html>
